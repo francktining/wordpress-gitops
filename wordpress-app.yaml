@@ -1,31 +1,36 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-
 metadata:
   name: wordpress
   namespace: argocd
-
 spec:
   project: default
-
   source:
+    # Full path to the chart since repoURL is just the base registry
+    chart: bitnamicharts/wordpress 
     repoURL: registry-1.docker.io
-    chart: bitnamicharts/wordpress
     targetRevision: 24.1.1
-
     helm:
       values: |
+        image:
+          tag: latest
+        mariadb:
+          image:
+            tag: latest
+          primary:
+            persistence:
+              storageClass: "local-path"
+        global:
+          storageClass: "local-path"
         service:
           type: NodePort
-
+          nodePorts:
+            http: 30088
   destination:
-    server: https://kubernetes.default.svc
+    server: https://default.svc
     namespace: wordpress
-
   syncPolicy:
     automated:
-      prune: true
       selfHeal: true
-
     syncOptions:
       - CreateNamespace=true
