@@ -9,9 +9,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://charts
-    chart: registry-1.docker.io/bitnamicharts
-    targetRevision: 24.1.10
+    repoURL: registry-1.docker.io
+    chart: bitnamicharts/wordpress
+    targetRevision: 24.1.1
 
     helm:
       values: |
