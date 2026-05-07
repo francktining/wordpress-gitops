@@ -1,52 +1,56 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+
 metadata:
   name: wordpress
   namespace: argocd
+
 spec:
   project: default
+
   source:
-    repoURL: registry-1.docker.io
-    chart: bitnamicharts/wordpress
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: wordpress
     targetRevision: 24.1.1
+
     helm:
       values: |
         global:
           storageClass: "local-path"
-          imageRegistry: docker.io
 
-        # WordPress main image
         image:
           repository: bitnami/wordpress
-          tag: latest
+          tag: 6.7.1-debian-12-r5
 
-        # MariaDB fix
         mariadb:
-          image:
-            repository: bitnami/mariadb
-            tag: latest
+          auth:
+            rootPassword: "rootpassword"
+            password: "wordpresspass"
+
           primary:
             persistence:
               storageClass: "local-path"
-          # This fixes the Init:ImagePullBackOff for MariaDB
-          volumePermissions:
-            enabled: true
-            image:
-              repository: bitnami/os-shell
-              tag: latest
 
-        # Networking
+          image:
+            repository: bitnami/mariadb
+            tag: 11.4.5-debian-12-r0
+
         service:
           type: NodePort
           nodePorts:
             http: 30086
 
+        wordpressUsername: user
         wordpressPassword: "Loictining12345"
+
   destination:
-    server: https://default.svc
+    server: https://kubernetes.default.svc
     namespace: wordpress
+
   syncPolicy:
     automated:
+      prune: true
       selfHeal: true
+
     syncOptions:
       - CreateNamespace=true
