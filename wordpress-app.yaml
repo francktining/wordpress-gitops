@@ -6,26 +6,42 @@ metadata:
 spec:
   project: default
   source:
-    # Full path to the chart since repoURL is just the base registry
-    chart: bitnamicharts/wordpress 
     repoURL: registry-1.docker.io
+    chart: bitnamicharts/wordpress
     targetRevision: 24.1.1
     helm:
       values: |
+        global:
+          storageClass: "local-path"
+          imageRegistry: docker.io
+
+        # WordPress main image
         image:
+          repository: bitnami/wordpress
           tag: latest
+
+        # MariaDB fix
         mariadb:
           image:
+            repository: bitnami/mariadb
             tag: latest
           primary:
             persistence:
               storageClass: "local-path"
-        global:
-          storageClass: "local-path"
+          # This fixes the Init:ImagePullBackOff for MariaDB
+          volumePermissions:
+            enabled: true
+            image:
+              repository: bitnami/os-shell
+              tag: latest
+
+        # Networking
         service:
           type: NodePort
           nodePorts:
-            http: 30088
+            http: 30080
+
+        wordpressPassword: "Loictining12345"
   destination:
     server: https://default.svc
     namespace: wordpress
