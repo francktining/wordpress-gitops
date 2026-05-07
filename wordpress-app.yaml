@@ -3,7 +3,7 @@ kind: Application
 
 metadata:
   name: wordpress
-  namespace: wordpress
+  namespace: argocd
 
 spec:
   project: default
