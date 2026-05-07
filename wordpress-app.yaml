@@ -39,7 +39,7 @@ spec:
         service:
           type: NodePort
           nodePorts:
-            http: 30080
+            http: 30086
 
         wordpressPassword: "Loictining12345"
   destination:
